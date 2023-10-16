@@ -55,5 +55,12 @@ To truly harness the predictive power necessary for dynamically updating educati
 While we have made significant strides in predicting student performance through gameplay interactions, there's room for improvement. With further refinements and the inclusion of more diverse data sources, we aspire to create a tool that's not only predictive but also instrumental in enhancing the educational experience for students using BrainBoost Interactive games.
 
  
-
+## Repository Structure
+```none            
+├── data 
+├── figs                   
+├── .gitignore
+├── README.md 
+├── gameplay-classification.ipynb
+└── brainboost-gameplay-classification.pdf
 
