@@ -7,11 +7,10 @@ BrainBoost Interactive is a growing company with a mission to create educational
 ## Dataset & Methods
 The training and validation data for this model were sourced from game plays hosted on the [PBS Wisconsin Education website](https://pbswisconsineducation.org/jowilder/play-the-game/). The data has been aggregated and is [available on Kaggle](https://www.kaggle.com/competitions/predict-student-performance-from-game-play/overview).
 
-Examination of the dataset reveals that it is structured as a time series. Each participant has multiple rows corresponding to data from 1 out of the 22 levels. To make the data more interpretable, I will aggregate over the 22 levels to derive a single value for each feature per level.
-
+Examination of the dataset reveals that it is structured as a time series. Each participant has multiple rows corresponding to data from 1 out of the 22 levels. To make the data more interpretable, I aggregated over the 22 levels to derive a single value for each feature per level.
 
 ## Preparation for Modeling
-Prior to modeling, it is essential to assess the presence of collinearity (where two features are highly correlated) and multicollinearity (where one feature can be linearly predicted from others). To do this, I'll examine pairwise correlations among the features and compute the variance inflation factor (VIF) for each one.
+Prior to modeling, it is essential to assess the presence of collinearity (where two features are highly correlated) and multicollinearity (where one feature can be linearly predicted from others). To do this, I examined pairwise correlations among the features and calculated the variance inflation factor (VIF) for each one.
 
 ![](figs/feature-corrs.png)
 
@@ -21,12 +20,12 @@ To further validate the absence of multicollinearity, I next calculated the Vari
 
 ![](figs/feature-VIF.png)
 
-All VIF values are well below the standard threshold of 5, with the highest being cutscene_clicks at approximately 2.13. These low VIF values reinforce confidence in the independence of the features. Because of this, I will feed all 10 features into the baseline models. 
+All VIF values are well below the standard threshold of 5, with the highest being cutscene_clicks at approximately 2.13. These low VIF values reinforce confidence in the independence of the features. Because of this, I fed all 10 features into the baseline models. 
 
 ## Baseline Model Comparison
-I will fit two baseline models for this binary classification problem: logistic regression and decision tree. Model performance will be gauged using accuracy, as it is crucial to accurately identify students whether they pass or fail the test. This will help the game adjust dynamically both for students who are doing well and need more of a challenge and for students who are not doing well and need assistance. As a secondary test, I will also look at F1 scores for the baseline models.
-![](figs/baseline-confusion.png)
+I fit two baseline models for this binary classification problem: logistic regression and decision tree. Model performance will be gauged using accuracy, as it is crucial to accurately identify students whether they pass or fail the test. This will help the game adjust dynamically both for students who are doing well and need more of a challenge and for students who are not doing well and need assistance. As a secondary test, I also looked at F1 scores for the baseline models.
 
+![](figs/baseline-confusion.png)
 ![](figs/baseline-rocs.png)
 
 The logistic regression outperforms random chance (with an accuracy above 0.50) and exhibits consistent performance across both the training and validation datasets. This is encouraging as it suggests the model is not overfitting. However, it might be underfitting, indicating a potential need for model tuning.
@@ -35,15 +34,11 @@ The decision tree appears less promising. It shows signs of overfitting, demonst
 
 The AUC curves provides further confidence in the logistic regression model. An AUC of 0.72 suggests that there is a 72% chance that the logistic regression model will correctly differentiate between passing and failing students. The fact that the training and validation curves nearly overlap suggests a balanced model that is not overfitting or underfitting significantly. The perfect AUC of 1.00 on the training data contrasted with a subpar AUC of 0.58 on the validation data emphasizes its overfitting nature and poor generalization to new, unseen data.
 
-Moving forward, I will prioritize the logistic regression model and work to improve its performance through hyperparameter selection and tuning.
-
-Specifically, I will determine which solver, which regularization strength, and tolerance level leads to the best performance in the logistic regression model.
-
-Despite hyperparameter tuning, there is only a slight improvement from the baseline model (accuracy = 0.659). For this reason, I will revisit the initial set of features used in the model, and now explore whether incorporating polynomial versions of these features (and their interactions) can enhance the model's accuracy. I will iterate through logistic regression models trained on 1-degree, 2-degree, and 3-degree polynomial features.
+Moving forward, I prioritized the logistic regression model and worked to determine which solver, which regularization strength, and tolerance level led to the best performance. However, despite hyperparameter tuning, there was only a slight improvement from the baseline model (accuracy = 0.659). For this reason, I revisited the initial set of features used in the model, by exploring whether incorporating polynomial versions of these features (and their interactions) would enhance the model's accuracy. I iterated through logistic regression models trained on 1-degree, 2-degree, and 3-degree polynomial features.
 
 ![](figs/polynomial-accuracy.png)
 
-The model utilizing 2-degree polynomial features shows marginally better performance on the validation dataset compared to the others, so it will be used for the final model configuration. Next, I will evaluate the final model (logistic regression with C=0.04 and 2-degree polynomials) on the testing dataset. To visualize its efficacy, I'll employ both an ROC curve and a confusion matrix.
+The model utilizing 2-degree polynomial features shows marginally better performance on the validation dataset compared to the others, so it will be used for the final model configuration. Next, I will evaluate the final model (logistic regression with C=0.04 and 2-degree polynomials) on the testing dataset. To visualize its efficacy, I utilized both an ROC curve and a confusion matrix.
 
 ![](figs/roc-comparison.png)
 ![](figs/confusion-comparisons.png)
